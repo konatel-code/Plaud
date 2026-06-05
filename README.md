@@ -70,4 +70,4 @@ pnpm --filter @daka/web dev  # web (http://localhost:3000)
 
 ## Stav projektu
 
-🟢 **Fáza M1–M3 — Základ + AI pipeline (web).** Hotové: monorepo, dátový model, backend (auth, nahrávky, prepis Whisper + zhrnutia GPT-4o cez frontu), web (prihlásenie, nahrávanie, prepis, zhrnutia). Nasleduje M4 (doménové výstupy a export) a M5 (mobil). Pozri [roadmapu](./docs/11-roadmap.md).
+🟢 **Fáza M1–M4 — Základ + AI pipeline + doménové výstupy (web).** Hotové: monorepo, dátový model, backend (auth, nahrávky, prepis Whisper + zhrnutia GPT-4o cez frontu), doménové výstupy (profil klienta, úlohy, karta dodávateľa), **export Markdown/HTML/DOCX**, web (prihlásenie, nahrávanie, prepis, zhrnutia, karty, export). Nasleduje M5 (mobil) a M6 (diarizácia, glosár v admine, vyhľadávanie). Pozri [roadmapu](./docs/11-roadmap.md).

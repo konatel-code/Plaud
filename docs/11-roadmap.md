@@ -28,10 +28,10 @@ Postupujeme po míľnikoch tak, aby bol systém **použiteľný čo najskôr** (
 - Zobrazenie zhrnutí, regenerácia, ručná úprava.
 - **Výstup:** hotové štruktúrované zhrnutie podľa typu rozhovoru.
 
-### 🟢 M4 — Doménové výstupy a export
+### ✅ M4 — Doménové výstupy a export (HOTOVÉ)
 - Profil klienta (stavy LEAD→…), úlohy z porady, karta dodávateľa.
 - Návrh follow-up e-mailu.
-- Export PDF/DOCX/Markdown.
+- Export Markdown / HTML / DOCX. _(PDF: cez „Tlač → uložiť ako PDF" z HTML; natívny PDF export neskôr.)_
 - **Výstup:** plne použiteľný web pre 3 hlavné scenáre.
 
 ### 🟡 M5 — Mobilná aplikácia
