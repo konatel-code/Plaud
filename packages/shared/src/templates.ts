@@ -268,11 +268,31 @@ export const ZHRNUTIE_TEMPLATE: TemplateDefinition = {
   },
 };
 
+export const EMAIL_TEMPLATE: TemplateDefinition = {
+  kluc: "email",
+  nazov: "Follow-up e-mail",
+  useCase: "UNIVERZAL",
+  popis: "Návrh zdvorilého e-mailu klientovi/partnerovi na základe rozhovoru.",
+  prompt: `Na základe rozhovoru napíš návrh zdvorilého e-mailu v mene cestovnej kancelárie DAKA. Zhrň, na čom ste sa dohodli, a uveď ďalšie kroky. Tón profesionálny a priateľský. ${SK}`,
+  schema: {
+    type: "object",
+    additionalProperties: false,
+    properties: {
+      predmet: { type: "string" },
+      oslovenie: { type: "string" },
+      telo: { type: "string" },
+      podpis: { type: "string" },
+    },
+    required: ["predmet", "oslovenie", "telo", "podpis"],
+  },
+};
+
 export const TEMPLATE_DEFINITIONS: TemplateDefinition[] = [
   KONZULTACIA_TEMPLATE,
   PORADA_TEMPLATE,
   DODAVATEL_TEMPLATE,
   ZHRNUTIE_TEMPLATE,
+  EMAIL_TEMPLATE,
 ];
 
 export function getTemplateByKey(kluc: string): TemplateDefinition | undefined {

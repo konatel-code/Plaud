@@ -58,9 +58,24 @@ export interface Summary {
   }[];
 }
 
+export interface ClientProfile {
+  id: string;
+  stav: "LEAD" | "PONUKA_ODOSLANA" | "REZERVOVANE" | "STRATENY";
+  dataJson: Record<string, any>;
+}
+
 export interface RecordingDetail extends RecordingListItem {
   poznamka?: string | null;
   chyba?: string | null;
   transcript?: { plnyText: string; segments: TranscriptSegment[] } | null;
   summaries: Summary[];
+  clientProfile?: ClientProfile | null;
+  supplierDeal?: { id: string; dataJson: Record<string, any> } | null;
 }
+
+export const CLIENT_STATUS_LABEL: Record<ClientProfile["stav"], string> = {
+  LEAD: "Záujemca",
+  PONUKA_ODOSLANA: "Ponuka odoslaná",
+  REZERVOVANE: "Rezervované",
+  STRATENY: "Stratený",
+};

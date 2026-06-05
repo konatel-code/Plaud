@@ -72,3 +72,20 @@ export const consentSchema = z.object({
   poznamka: z.string().max(1000).optional(),
 });
 export type ConsentInput = z.infer<typeof consentSchema>;
+
+export const updateTaskSchema = z.object({
+  stav: z.enum(["OTVORENA", "HOTOVA"]).optional(),
+  zodpovedny: z.string().max(200).optional(),
+  termin: z.string().optional(),
+});
+export type UpdateTaskInput = z.infer<typeof updateTaskSchema>;
+
+export const updateClientProfileSchema = z.object({
+  stav: z.enum(["LEAD", "PONUKA_ODOSLANA", "REZERVOVANE", "STRATENY"]),
+});
+export type UpdateClientProfileInput = z.infer<
+  typeof updateClientProfileSchema
+>;
+
+export const exportFormatSchema = z.enum(["md", "html", "docx"]);
+export type ExportFormat = z.infer<typeof exportFormatSchema>;

@@ -51,6 +51,24 @@ export const api = {
   baseUrl: BASE,
 };
 
+/** Stiahne súbor z API (s autorizáciou) a spustí uloženie v prehliadači. */
+export async function downloadFile(path: string, fallbackName: string) {
+  const token = getToken();
+  const res = await fetch(`${BASE}/api${path}`, {
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  });
+  if (!res.ok) throw new Error("Export zlyhal");
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = fallbackName;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
 /** Nahrá súbor priamo do object storage cez pre-signed URL. */
 export async function uploadToStorage(
   url: string,

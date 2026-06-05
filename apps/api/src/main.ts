@@ -1,12 +1,12 @@
 import "reflect-metadata";
 import { NestFactory } from "@nestjs/core";
-import { Logger, ValidationPipe } from "@nestjs/common";
+import { Logger } from "@nestjs/common";
 import { AppModule } from "./app.module";
 
 async function bootstrap() {
+  // Validáciu vstupov riešime cez Zod (ZodValidationPipe), nie class-validator.
   const app = await NestFactory.create(AppModule, { cors: true });
   app.setGlobalPrefix("api", { exclude: ["health"] });
-  app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
 
   const port = Number(process.env.API_PORT ?? 4000);
   await app.listen(port);

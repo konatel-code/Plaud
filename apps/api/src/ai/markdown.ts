@@ -13,6 +13,8 @@ export function renderSummaryMarkdown(
       return renderPorada(data);
     case "dodavatel":
       return renderDodavatel(data);
+    case "email":
+      return renderEmail(data);
     default:
       return renderGeneric(data);
   }
@@ -137,6 +139,19 @@ ${list(d.otvorene_body)}
 
 ### Zhrnutie
 ${val(d.zhrnutie)}
+`;
+}
+
+function renderEmail(d: Record<string, any>): string {
+  return `## Návrh e-mailu
+
+**Predmet:** ${val(d.predmet)}
+
+${val(d.oslovenie)}
+
+${val(d.telo)}
+
+${val(d.podpis)}
 `;
 }
 

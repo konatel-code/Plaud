@@ -8,6 +8,8 @@ import { StorageModule } from "./storage/storage.module";
 import { TemplatesModule } from "./templates/templates.module";
 import { RecordingsModule } from "./recordings/recordings.module";
 import { SummariesModule } from "./summaries/summaries.module";
+import { ExportsModule } from "./exports/exports.module";
+import { DomainModule } from "./domain/domain.module";
 import { AiModule } from "./ai/ai.module";
 import { QueueModule } from "./queue/queue.module";
 import { WorkerModule } from "./worker/worker.module";
@@ -34,6 +36,8 @@ function redisConnection() {
     TemplatesModule,
     RecordingsModule,
     SummariesModule,
+    ExportsModule,
+    DomainModule,
     AiModule,
     QueueModule,
     WorkerModule,

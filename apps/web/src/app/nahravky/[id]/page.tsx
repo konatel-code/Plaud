@@ -3,9 +3,10 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { AppShell } from "@/components/AppShell";
-import { api } from "@/lib/api";
+import { api, downloadFile } from "@/lib/api";
 import type { RecordingDetail } from "@/lib/types";
 import { STATUS_COLOR, STATUS_LABEL, TYPE_LABEL } from "@/lib/labels";
+import { ProfileCard, TaskList } from "@/components/DomainCards";
 
 interface Template {
   kluc: string;
@@ -95,9 +96,30 @@ export default function DetailPage() {
             </span>
           </p>
         </div>
-        <button onClick={remove} className="text-sm text-slate-400 hover:text-red-600">
-          Zmazať
-        </button>
+        <div className="flex items-center gap-2">
+          {rec.summaries.length > 0 && (
+            <div className="flex items-center gap-1 text-sm">
+              <span className="text-slate-400">Export:</span>
+              {(["md", "html", "docx"] as const).map((f) => (
+                <button
+                  key={f}
+                  onClick={() =>
+                    downloadFile(
+                      `/recordings/${id}/export?format=${f}`,
+                      `${rec.nazov}.${f}`,
+                    )
+                  }
+                  className="rounded border px-2 py-1 uppercase hover:bg-slate-50"
+                >
+                  {f}
+                </button>
+              ))}
+            </div>
+          )}
+          <button onClick={remove} className="text-sm text-slate-400 hover:text-red-600">
+            Zmazať
+          </button>
+        </div>
       </div>
 
       {rec.stav === "FAILED" && rec.chyba && (
@@ -130,6 +152,9 @@ export default function DetailPage() {
 
       {tab === "zhrnutie" ? (
         <div className="space-y-4">
+          {rec.clientProfile && <ProfileCard profile={rec.clientProfile} />}
+          {summary && summary.tasks.length > 0 && <TaskList summary={summary} />}
+
           {summary ? (
             <article className="whitespace-pre-wrap rounded-xl border bg-white p-6 text-sm leading-relaxed">
               {summary.markdown}
