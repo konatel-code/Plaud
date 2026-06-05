@@ -57,6 +57,17 @@ Kompletná špecifikácia je v priečinku [`docs/`](./docs):
 └── docs/           # Návrh a špecifikácia
 ```
 
+## Rýchly štart (dev)
+
+```bash
+pnpm install                 # závislosti
+pnpm infra:up                # PostgreSQL + Redis + MinIO (Docker)
+cp .env.example .env         # doplň OPENAI_API_KEY
+pnpm db:migrate && pnpm db:seed   # schéma + šablóny + admin@ckdaka.sk / admin123
+pnpm --filter @daka/api dev  # backend + worker (http://localhost:4000)
+pnpm --filter @daka/web dev  # web (http://localhost:3000)
+```
+
 ## Stav projektu
 
-🟡 **Fáza M0 — Návrh.** Práve dolaďujeme špecifikáciu. Implementácia začne po jej odsúhlasení (pozri [roadmapu](./docs/11-roadmap.md)).
+🟢 **Fáza M1–M3 — Základ + AI pipeline (web).** Hotové: monorepo, dátový model, backend (auth, nahrávky, prepis Whisper + zhrnutia GPT-4o cez frontu), web (prihlásenie, nahrávanie, prepis, zhrnutia). Nasleduje M4 (doménové výstupy a export) a M5 (mobil). Pozri [roadmapu](./docs/11-roadmap.md).

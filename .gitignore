@@ -6,9 +6,11 @@ node_modules/
 dist/
 build/
 .next/
+next-env.d.ts
 out/
 .turbo/
 .expo/
+*.tsbuildinfo
 
 # Env a tajomstvá
 .env

@@ -1,5 +1,17 @@
-# apps/web — Webová aplikácia (Next.js)
+# @daka/web — Webová aplikácia (Next.js)
 
-Web rozhranie systému **DAKA Hlas**: prihlásenie, nahrávanie cez mikrofón, zoznam a detail nahrávok, prepis, zhrnutia, profil klienta / úlohy / karta dodávateľa, export a admin (šablóny, glosár, používatelia).
+Web rozhranie systému **DAKA Hlas**: prihlásenie, nahrávanie cez mikrofón (MediaRecorder) alebo upload súboru, zoznam nahrávok, detail s prepisom a zhrnutím, opätovné generovanie podľa šablóny.
 
-> Placeholder — implementácia začne v míľniku **M1** (pozri [`docs/11-roadmap.md`](../../docs/11-roadmap.md)).
+## Stránky
+- `/login` — prihlásenie
+- `/nahravky` — zoznam nahrávok (s priebežným obnovením stavu)
+- `/nahravky/nova` — nová nahrávka (mikrofón / upload, súhlas GDPR pri konzultácii)
+- `/nahravky/[id]` — detail: zhrnutie, prepis, regenerácia šablónou
+
+## Spustenie (dev)
+```bash
+# API musí bežať (viď apps/api). Nastav NEXT_PUBLIC_API_URL ak nie je default.
+pnpm --filter @daka/web dev      # http://localhost:3000
+```
+
+Predvolene volá API na `http://localhost:4000` (premenná `NEXT_PUBLIC_API_URL`).
