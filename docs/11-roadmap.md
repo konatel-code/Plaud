@@ -57,9 +57,11 @@ Postupujeme po míľnikoch tak, aby bol systém **použiteľný čo najskôr** (
 5. Worker + prepis.
 6. Šablóny + zhrnutia.
 
-## Otvorené otázky na doladenie s CK DAKA
-- Má sa systém napojiť na existujúci **CRM / rezervačný systém**? (ovplyvní M7)
+## Rozhodnutia CK DAKA (potvrdené)
+- ✅ **Napojenie na CRM / rezervačný systém:** áno — počítame s ním v M7 (architektúra už ráta s profilom klienta ako zdrojom dát).
+- ✅ **Retenčná doba audia a výstupov:** neobmedzená (automatické mazanie zatiaľ nezavádzame; manuálny výmaz kvôli GDPR ostáva).
+- ✅ **Hosting:** neskôr na vlastnom serveri CK DAKA; zatiaľ vývoj na GitHube. Návrh preto cielime na **self-hostovateľný** beh (Docker), nezávislý od konkrétneho cloudu.
+
+## Otvorené otázky (nižšia priorita)
 - Majú predajcovia firemné **mobily** (iOS/Android) — pre M5.
-- **Retenčná doba** audia a výstupov (GDPR).
 - Kto bude **správcom šablón a glosára** (rola ADMIN).
-- Preferovaný **hosting/poskytovateľ** v EU.
