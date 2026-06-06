@@ -32,6 +32,11 @@ export function AppShell({ children }: { children: ReactNode }) {
             <Link href="/nahravky" className="hover:text-daka">
               Nahrávky
             </Link>
+            {(user.role === "ADMIN" || user.role === "MANAGER") && (
+              <Link href="/dashboard" className="hover:text-daka">
+                Prehľad
+              </Link>
+            )}
             {user.role === "ADMIN" && (
               <>
                 <Link href="/admin/glosar" className="hover:text-daka">
@@ -39,6 +44,9 @@ export function AppShell({ children }: { children: ReactNode }) {
                 </Link>
                 <Link href="/admin/sablony" className="hover:text-daka">
                   Šablóny
+                </Link>
+                <Link href="/admin/audit" className="hover:text-daka">
+                  Audit
                 </Link>
               </>
             )}

@@ -45,10 +45,10 @@ Postupujeme po míľnikoch tak, aby bol systém **použiteľný čo najskôr** (
 - ✅ Fulltextové vyhľadávanie (názov, poznámka, prepis, zhrnutia).
 - ⏳ Diarizácia (mikroservis/externý provider), priečinky/štítky, zdieľanie, myšlienkové mapy.
 
-### 🟡 M7 — Prevádzka, GDPR, integrácie
-- Audit log, retencia/automatické mazanie, štatistiky/dashboard.
-- DPA, ROPA, súhlasy v procese.
-- (neskôr) napojenie na CRM/rezervačný systém DAKA, kalendár.
+### 🟢 M7 — Prevádzka, GDPR, integrácie (čiastočne hotové)
+- ✅ Audit log (mutácie kto/čo/kedy) + admin výpis.
+- ✅ Dashboard so štatistikami (nahrávky podľa typu/stavu, klienti podľa stavu, otvorené úlohy).
+- ⏳ DPA, ROPA, súhlasy v procese; (neskôr) napojenie na CRM/rezervačný systém DAKA, kalendár.
 
 ## Návrh poradia prác hneď po odsúhlasení
 1. Scaffold monorepa (pnpm + Turborepo) a `docker-compose.yml`.
