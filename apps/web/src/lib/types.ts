@@ -67,7 +67,7 @@ export interface ClientProfile {
 export interface RecordingDetail extends RecordingListItem {
   poznamka?: string | null;
   chyba?: string | null;
-  transcript?: { plnyText: string; segments: TranscriptSegment[] } | null;
+  transcript?: { id: string; plnyText: string; segments: TranscriptSegment[] } | null;
   summaries: Summary[];
   clientProfile?: ClientProfile | null;
   supplierDeal?: { id: string; dataJson: Record<string, any> } | null;

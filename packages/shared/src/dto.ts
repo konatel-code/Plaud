@@ -89,3 +89,23 @@ export type UpdateClientProfileInput = z.infer<
 
 export const exportFormatSchema = z.enum(["md", "html", "docx"]);
 export type ExportFormat = z.infer<typeof exportFormatSchema>;
+
+export const glossaryCreateSchema = z.object({
+  pojem: z.string().min(1).max(120),
+  kategoria: z.string().max(60).optional(),
+});
+export type GlossaryCreateInput = z.infer<typeof glossaryCreateSchema>;
+
+export const templateUpdateSchema = z.object({
+  nazov: z.string().min(1).max(120).optional(),
+  prompt: z.string().min(1).max(8000).optional(),
+  popis: z.string().max(500).optional(),
+  aktivna: z.boolean().optional(),
+});
+export type TemplateUpdateInput = z.infer<typeof templateUpdateSchema>;
+
+export const renameSpeakerSchema = z.object({
+  from: z.string().min(1).max(80),
+  to: z.string().min(1).max(80),
+});
+export type RenameSpeakerInput = z.infer<typeof renameSpeakerSchema>;

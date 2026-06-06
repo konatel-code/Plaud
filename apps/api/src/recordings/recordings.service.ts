@@ -58,9 +58,12 @@ export class RecordingsService {
     if (query.typ) where.typ = query.typ;
     if (query.stav) where.stav = query.stav;
     if (query.q) {
+      const q = query.q;
       where.OR = [
-        { nazov: { contains: query.q, mode: "insensitive" } },
-        { poznamka: { contains: query.q, mode: "insensitive" } },
+        { nazov: { contains: q, mode: "insensitive" } },
+        { poznamka: { contains: q, mode: "insensitive" } },
+        { transcript: { plnyText: { contains: q, mode: "insensitive" } } },
+        { summaries: { some: { markdown: { contains: q, mode: "insensitive" } } } },
       ];
     }
 

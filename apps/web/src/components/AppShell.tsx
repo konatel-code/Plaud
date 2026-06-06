@@ -32,6 +32,16 @@ export function AppShell({ children }: { children: ReactNode }) {
             <Link href="/nahravky" className="hover:text-daka">
               Nahrávky
             </Link>
+            {user.role === "ADMIN" && (
+              <>
+                <Link href="/admin/glosar" className="hover:text-daka">
+                  Glosár
+                </Link>
+                <Link href="/admin/sablony" className="hover:text-daka">
+                  Šablóny
+                </Link>
+              </>
+            )}
             <Link
               href="/nahravky/nova"
               className="rounded-md bg-daka px-3 py-1.5 font-medium text-white hover:bg-daka-dark"

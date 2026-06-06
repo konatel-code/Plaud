@@ -192,6 +192,39 @@ export default function DetailPage() {
           {rec.transcript ? (
             rec.transcript.segments.length > 0 ? (
               <div className="space-y-2">
+                {(() => {
+                  const speakers = [
+                    ...new Set(
+                      rec.transcript.segments
+                        .map((s) => s.speaker)
+                        .filter((x): x is string => !!x),
+                    ),
+                  ];
+                  const tid = rec.transcript.id;
+                  return speakers.length > 0 ? (
+                    <div className="mb-3 flex flex-wrap items-center gap-2 border-b pb-3 text-xs text-slate-500">
+                      <span>Hovoriaci:</span>
+                      {speakers.map((sp) => (
+                        <button
+                          key={sp}
+                          onClick={async () => {
+                            const to = window.prompt(`Premenovať „${sp}" na:`, sp);
+                            if (!to || to === sp) return;
+                            await api.patch(`/transcripts/${tid}/speaker`, {
+                              from: sp,
+                              to,
+                            });
+                            await load();
+                          }}
+                          className="rounded-full border px-2 py-0.5 hover:bg-slate-50"
+                          title="Kliknutím premenuješ"
+                        >
+                          {sp} ✎
+                        </button>
+                      ))}
+                    </div>
+                  ) : null;
+                })()}
                 {rec.transcript.segments.map((s) => (
                   <p key={s.id}>
                     <span className="mr-2 font-mono text-xs text-slate-400">

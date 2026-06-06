@@ -13,6 +13,22 @@ export class TemplatesService {
     });
   }
 
+  listAll() {
+    return this.prisma.template.findMany({ orderBy: { nazov: "asc" } });
+  }
+
+  update(
+    id: string,
+    input: {
+      nazov?: string;
+      prompt?: string;
+      popis?: string;
+      aktivna?: boolean;
+    },
+  ) {
+    return this.prisma.template.update({ where: { id }, data: input });
+  }
+
   async getByKey(kluc: string): Promise<TemplateLike> {
     const t = await this.prisma.template.findUnique({ where: { kluc } });
     if (!t) throw new NotFoundException(`Šablóna "${kluc}" neexistuje`);

@@ -38,11 +38,12 @@ Postupujeme po míľnikoch tak, aby bol systém **použiteľný čo najskôr** (
 - Expo appka: nahrávanie (aj na pozadí), upload, prezeranie výstupov, notifikácie.
 - **Výstup:** predajca nahráva z mobilu.
 
-### 🟡 M6 — Pokročilé AI a organizácia
-- Diarizácia (mikroservis alebo externý provider), premenovanie hovoriacich.
-- Cestovný glosár v admine, vlastné šablóny.
-- Fulltextové vyhľadávanie, priečinky/štítky, zdieľanie.
-- Myšlienkové mapy.
+### 🟢 M6 — Pokročilé AI a organizácia (čiastočne hotové)
+- ✅ Premenovanie hovoriacich v prepise.
+- ✅ Správa cestovného glosára v admine.
+- ✅ Správa šablón v admine (úprava promptu/názvu, zapnutie/vypnutie).
+- ✅ Fulltextové vyhľadávanie (názov, poznámka, prepis, zhrnutia).
+- ⏳ Diarizácia (mikroservis/externý provider), priečinky/štítky, zdieľanie, myšlienkové mapy.
 
 ### 🟡 M7 — Prevádzka, GDPR, integrácie
 - Audit log, retencia/automatické mazanie, štatistiky/dashboard.

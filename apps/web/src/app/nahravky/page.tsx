@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { AppShell } from "@/components/AppShell";
 import { api } from "@/lib/api";
@@ -10,10 +10,13 @@ import { STATUS_COLOR, STATUS_LABEL, TYPE_LABEL } from "@/lib/labels";
 export default function NahravkyPage() {
   const [data, setData] = useState<RecordingList | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [q, setQ] = useState("");
+  const qRef = useRef("");
 
   async function load() {
     try {
-      setData(await api.get<RecordingList>("/recordings"));
+      const query = qRef.current ? `?q=${encodeURIComponent(qRef.current)}` : "";
+      setData(await api.get<RecordingList>(`/recordings${query}`));
     } catch (err) {
       setError(err instanceof Error ? err.message : "Chyba načítania");
     }
@@ -25,10 +28,27 @@ export default function NahravkyPage() {
     return () => clearInterval(t);
   }, []);
 
+  function onSearch(e: React.FormEvent) {
+    e.preventDefault();
+    qRef.current = q;
+    load();
+  }
+
   return (
     <AppShell>
-      <div className="mb-4 flex items-center justify-between">
+      <div className="mb-4 flex items-center justify-between gap-4">
         <h1 className="text-xl font-semibold">Nahrávky</h1>
+        <form onSubmit={onSearch} className="flex gap-2">
+          <input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="Hľadať v názvoch, prepisoch, zhrnutiach…"
+            className="w-72 rounded-md border px-3 py-1.5 text-sm outline-none focus:border-daka"
+          />
+          <button className="rounded-md border px-3 py-1.5 text-sm hover:bg-slate-50">
+            Hľadať
+          </button>
+        </form>
       </div>
 
       {error && (
