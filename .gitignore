@@ -36,3 +36,4 @@ coverage/
 # Lokálne dáta (dev úložisko/DB)
 /data/
 *.sqlite
+dump.rdb
