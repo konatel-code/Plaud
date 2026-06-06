@@ -13,11 +13,13 @@ import {
   consentSchema,
   createRecordingSchema,
   listRecordingsQuerySchema,
+  shareRecordingSchema,
   updateRecordingSchema,
   uploadUrlSchema,
   type ConsentInput,
   type CreateRecordingInput,
   type ListRecordingsQuery,
+  type ShareRecordingInput,
   type UpdateRecordingInput,
   type UploadUrlInput,
 } from "@daka/shared";
@@ -97,5 +99,23 @@ export class RecordingsController {
     @Body() body: { casSek: number; poznamka?: string },
   ) {
     return this.recordings.addHighlight(user, id, body.casSek, body.poznamka);
+  }
+
+  @Post(":id/share")
+  share(
+    @CurrentUser() user: AuthUser,
+    @Param("id") id: string,
+    @Body(new ZodValidationPipe(shareRecordingSchema)) body: ShareRecordingInput,
+  ) {
+    return this.recordings.setShares(user, id, body.userId);
+  }
+
+  @Delete(":id/share/:userId")
+  unshare(
+    @CurrentUser() user: AuthUser,
+    @Param("id") id: string,
+    @Param("userId") userId: string,
+  ) {
+    return this.recordings.removeShare(user, id, userId);
   }
 }

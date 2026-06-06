@@ -89,6 +89,7 @@ model User {
 
   recordings   Recording[]
   auditLogs    AuditLog[]
+  sharedWithMe RecordingShare[]
 
   @@map("users")
 }
@@ -106,6 +107,7 @@ model Recording {
   stav       RecordingStatus @default(UPLOADED)
   poznamka   String?
   chyba      String?         // popis chyby pri FAILED
+  stitky     String[]        @default([])
   createdAt  DateTime        @default(now())
   updatedAt  DateTime        @updatedAt
 
@@ -116,11 +118,25 @@ model Recording {
   clientProfile ClientProfile?
   supplierDeal  SupplierDeal?
   consent       ConsentRecord?
+  shares        RecordingShare[]
 
   @@index([ownerId])
   @@index([typ])
   @@index([stav])
   @@map("recordings")
+}
+
+model RecordingShare {
+  id          String    @id @default(uuid())
+  recordingId String
+  recording   Recording @relation(fields: [recordingId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+
+  @@unique([recordingId, userId])
+  @@index([userId])
+  @@map("recording_shares")
 }
 
 model Transcript {

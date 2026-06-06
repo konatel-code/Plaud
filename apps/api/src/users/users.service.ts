@@ -14,6 +14,15 @@ export class UsersService {
     });
   }
 
+  /** Zoznam kolegov (na výber pri zdieľaní) — bez citlivých údajov. */
+  colleagues(exceptUserId: string) {
+    return this.prisma.user.findMany({
+      where: { id: { not: exceptUserId } },
+      select: { id: true, meno: true, role: true },
+      orderBy: { meno: "asc" },
+    });
+  }
+
   async create(input: {
     email: string;
     meno: string;

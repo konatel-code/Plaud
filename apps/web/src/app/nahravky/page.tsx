@@ -87,6 +87,18 @@ export default function NahravkyPage() {
                     >
                       {r.nazov}
                     </Link>
+                    {r.stitky && r.stitky.length > 0 && (
+                      <div className="mt-1 flex flex-wrap gap-1">
+                        {r.stitky.map((t) => (
+                          <span
+                            key={t}
+                            className="rounded-full bg-daka/10 px-2 py-0.5 text-xs text-daka-dark"
+                          >
+                            {t}
+                          </span>
+                        ))}
+                      </div>
+                    )}
                   </td>
                   <td className="px-4 py-3 text-slate-600">{TYPE_LABEL[r.typ]}</td>
                   <td className="px-4 py-3">

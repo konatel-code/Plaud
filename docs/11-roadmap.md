@@ -43,7 +43,9 @@ Postupujeme po míľnikoch tak, aby bol systém **použiteľný čo najskôr** (
 - ✅ Správa cestovného glosára v admine.
 - ✅ Správa šablón v admine (úprava promptu/názvu, zapnutie/vypnutie).
 - ✅ Fulltextové vyhľadávanie (názov, poznámka, prepis, zhrnutia).
-- ⏳ Diarizácia (mikroservis/externý provider), priečinky/štítky, zdieľanie, myšlienkové mapy.
+- ✅ Štítky (tagy) na nahrávkach + filtrovanie podľa štítku.
+- ✅ Zdieľanie nahrávok s kolegami (RBAC: vlastník/zdieľané/MANAGER/ADMIN).
+- ⏳ Diarizácia (mikroservis/externý provider), myšlienkové mapy.
 
 ### 🟢 M7 — Prevádzka, GDPR, integrácie (čiastočne hotové)
 - ✅ Audit log (mutácie kto/čo/kedy) + admin výpis.

@@ -40,8 +40,14 @@ export const updateRecordingSchema = z.object({
   nazov: z.string().min(1).max(200).optional(),
   typ: recordingTypeSchema.optional(),
   poznamka: z.string().max(5000).optional(),
+  stitky: z.array(z.string().min(1).max(40)).max(20).optional(),
 });
 export type UpdateRecordingInput = z.infer<typeof updateRecordingSchema>;
+
+export const shareRecordingSchema = z.object({
+  userId: z.string().min(1),
+});
+export type ShareRecordingInput = z.infer<typeof shareRecordingSchema>;
 
 export const listRecordingsQuerySchema = z.object({
   typ: recordingTypeSchema.optional(),
@@ -56,6 +62,7 @@ export const listRecordingsQuerySchema = z.object({
     ])
     .optional(),
   q: z.string().optional(),
+  stitok: z.string().optional(),
   page: z.coerce.number().int().min(1).default(1),
   perPage: z.coerce.number().int().min(1).max(100).default(20),
 });

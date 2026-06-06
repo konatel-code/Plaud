@@ -7,6 +7,7 @@ import { api, downloadFile } from "@/lib/api";
 import type { RecordingDetail } from "@/lib/types";
 import { STATUS_COLOR, STATUS_LABEL, TYPE_LABEL } from "@/lib/labels";
 import { ProfileCard, TaskList } from "@/components/DomainCards";
+import { OrganizePanel } from "@/components/OrganizePanel";
 
 interface Template {
   kluc: string;
@@ -152,6 +153,7 @@ export default function DetailPage() {
 
       {tab === "zhrnutie" ? (
         <div className="space-y-4">
+          <OrganizePanel rec={rec} onChange={load} />
           {rec.clientProfile && <ProfileCard profile={rec.clientProfile} />}
           {summary && summary.tasks.length > 0 && <TaskList summary={summary} />}
 

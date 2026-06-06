@@ -23,8 +23,14 @@ export interface RecordingListItem {
   typ: RecordingType;
   stav: RecordingStatus;
   jazyk: string;
+  stitky?: string[];
   createdAt: string;
   owner?: { meno: string };
+}
+
+export interface RecordingShare {
+  userId: string;
+  user: { id: string; meno: string };
 }
 
 export interface RecordingList {
@@ -71,6 +77,8 @@ export interface RecordingDetail extends RecordingListItem {
   summaries: Summary[];
   clientProfile?: ClientProfile | null;
   supplierDeal?: { id: string; dataJson: Record<string, any> } | null;
+  stitky?: string[];
+  shares?: RecordingShare[];
 }
 
 export const CLIENT_STATUS_LABEL: Record<ClientProfile["stav"], string> = {

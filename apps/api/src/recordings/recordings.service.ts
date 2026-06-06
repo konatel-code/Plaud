@@ -53,19 +53,22 @@ export class RecordingsService {
   }
 
   async list(user: AuthUser, query: ListRecordingsQuery) {
-    const where: Record<string, unknown> = {};
-    if (user.role === "AGENT") where.ownerId = user.id;
-    if (query.typ) where.typ = query.typ;
-    if (query.stav) where.stav = query.stav;
+    const and: Record<string, unknown>[] = [this.visibilityFilter(user)];
+    if (query.typ) and.push({ typ: query.typ });
+    if (query.stav) and.push({ stav: query.stav });
+    if (query.stitok) and.push({ stitky: { has: query.stitok } });
     if (query.q) {
       const q = query.q;
-      where.OR = [
-        { nazov: { contains: q, mode: "insensitive" } },
-        { poznamka: { contains: q, mode: "insensitive" } },
-        { transcript: { plnyText: { contains: q, mode: "insensitive" } } },
-        { summaries: { some: { markdown: { contains: q, mode: "insensitive" } } } },
-      ];
+      and.push({
+        OR: [
+          { nazov: { contains: q, mode: "insensitive" } },
+          { poznamka: { contains: q, mode: "insensitive" } },
+          { transcript: { plnyText: { contains: q, mode: "insensitive" } } },
+          { summaries: { some: { markdown: { contains: q, mode: "insensitive" } } } },
+        ],
+      });
     }
+    const where = { AND: and };
 
     const [items, total] = await Promise.all([
       this.prisma.recording.findMany({
@@ -94,11 +97,30 @@ export class RecordingsService {
         highlights: { orderBy: { casSek: "asc" } },
         consent: true,
         owner: { select: { meno: true } },
+        shares: { include: { user: { select: { id: true, meno: true } } } },
       },
     });
     if (!recording) throw new NotFoundException("Nahrávka neexistuje");
-    this.assertCanAccess(user, recording.ownerId);
+    const sharedWithMe = recording.shares.some((s) => s.userId === user.id);
+    this.assertCanView(user, recording.ownerId, sharedWithMe);
     return recording;
+  }
+
+  async setShares(user: AuthUser, id: string, userId: string) {
+    await this.getOwned(user, id); // len vlastník/manažér/admin môže zdieľať
+    return this.prisma.recordingShare.upsert({
+      where: { recordingId_userId: { recordingId: id, userId } },
+      update: {},
+      create: { recordingId: id, userId },
+    });
+  }
+
+  async removeShare(user: AuthUser, id: string, userId: string) {
+    await this.getOwned(user, id);
+    await this.prisma.recordingShare
+      .delete({ where: { recordingId_userId: { recordingId: id, userId } } })
+      .catch(() => undefined);
+    return { ok: true };
   }
 
   async update(user: AuthUser, id: string, input: UpdateRecordingInput) {
@@ -144,16 +166,30 @@ export class RecordingsService {
 
   // --- pomocné ---
 
-  private assertCanAccess(user: AuthUser, ownerId: string) {
-    if (user.role === "AGENT" && ownerId !== user.id) {
-      throw new ForbiddenException("Nemáte prístup k tejto nahrávke");
+  /** Prisma filter: čo daný používateľ smie vidieť. */
+  private visibilityFilter(user: AuthUser): Record<string, unknown> {
+    if (user.role === "AGENT") {
+      return {
+        OR: [{ ownerId: user.id }, { shares: { some: { userId: user.id } } }],
+      };
     }
+    return {}; // MANAGER a ADMIN vidia všetko
   }
 
+  /** Prezeranie: vlastník, zdieľané so mnou, alebo MANAGER/ADMIN. */
+  private assertCanView(user: AuthUser, ownerId: string, shared: boolean) {
+    if (user.role !== "AGENT") return;
+    if (ownerId === user.id || shared) return;
+    throw new ForbiddenException("Nemáte prístup k tejto nahrávke");
+  }
+
+  /** Úpravy/zdieľanie/mazanie: vlastník alebo MANAGER/ADMIN (nie zdieľaný divák). */
   private async getOwned(user: AuthUser, id: string) {
     const recording = await this.prisma.recording.findUnique({ where: { id } });
     if (!recording) throw new NotFoundException("Nahrávka neexistuje");
-    this.assertCanAccess(user, recording.ownerId);
+    if (user.role === "AGENT" && recording.ownerId !== user.id) {
+      throw new ForbiddenException("Nemáte oprávnenie na túto akciu");
+    }
     return recording;
   }
 }
