@@ -34,9 +34,10 @@ Postupujeme po míľnikoch tak, aby bol systém **použiteľný čo najskôr** (
 - Export Markdown / HTML / DOCX. _(PDF: cez „Tlač → uložiť ako PDF" z HTML; natívny PDF export neskôr.)_
 - **Výstup:** plne použiteľný web pre 3 hlavné scenáre.
 
-### 🟡 M5 — Mobilná aplikácia
-- Expo appka: nahrávanie (aj na pozadí), upload, prezeranie výstupov, notifikácie.
-- **Výstup:** predajca nahráva z mobilu.
+### 🟢 M5 — Mobilná aplikácia (základ hotový)
+- ✅ Expo (React Native) appka: prihlásenie, zoznam, nahrávanie cez mikrofón (expo-av) + upload, detail (prepis, zhrnutie).
+- ✅ Rovnaké API ako web; token v expo-secure-store; súhlas pri konzultácii.
+- ⏳ Nahrávanie na pozadí, push notifikácie, build do storov (EAS).
 
 ### 🟢 M6 — Pokročilé AI a organizácia (čiastočne hotové)
 - ✅ Premenovanie hovoriacich v prepise.
