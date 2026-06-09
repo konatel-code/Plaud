@@ -15,13 +15,38 @@ const STATUSES: ClientProfile["stav"][] = [
   "STRATENY",
 ];
 
-export function ProfileCard({ profile }: { profile: ClientProfile }) {
+export function ProfileCard({
+  profile,
+  recordingId,
+}: {
+  profile: ClientProfile;
+  recordingId: string;
+}) {
   const [stav, setStav] = useState(profile.stav);
+  const [crm, setCrm] = useState<string | null>(null);
+  const [crmBusy, setCrmBusy] = useState(false);
   const d = profile.dataJson;
 
   async function changeStatus(next: ClientProfile["stav"]) {
     setStav(next);
     await api.patch(`/client-profiles/${profile.id}`, { stav: next }).catch(() => undefined);
+  }
+
+  async function sendToCrm() {
+    setCrmBusy(true);
+    setCrm(null);
+    try {
+      const r = await api.post<{ stav: string }>(`/recordings/${recordingId}/crm`);
+      setCrm(
+        r.stav === "ODOSLANE"
+          ? "✓ Odoslané do CRM"
+          : "Pripravené (CRM webhook nie je nastavený)",
+      );
+    } catch (e) {
+      setCrm(e instanceof Error ? e.message : "Odoslanie zlyhalo");
+    } finally {
+      setCrmBusy(false);
+    }
   }
 
   const row = (label: string, value: unknown) =>
@@ -68,6 +93,16 @@ export function ProfileCard({ profile }: { profile: ClientProfile }) {
           </ul>
         </div>
       )}
+      <div className="mt-3 flex items-center gap-3 border-t pt-3">
+        <button
+          onClick={sendToCrm}
+          disabled={crmBusy}
+          className="rounded-md border px-3 py-1.5 text-sm hover:bg-slate-50 disabled:opacity-50"
+        >
+          {crmBusy ? "Odosielam…" : "↗ Odoslať do CRM"}
+        </button>
+        {crm && <span className="text-sm text-slate-500">{crm}</span>}
+      </div>
     </div>
   );
 }

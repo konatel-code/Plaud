@@ -14,6 +14,7 @@ import { GlossaryModule } from "./glossary/glossary.module";
 import { TranscriptsModule } from "./transcripts/transcripts.module";
 import { StatsModule } from "./stats/stats.module";
 import { AuditModule } from "./audit/audit.module";
+import { IntegrationsModule } from "./integrations/integrations.module";
 import { AiModule } from "./ai/ai.module";
 import { QueueModule } from "./queue/queue.module";
 import { WorkerModule } from "./worker/worker.module";
@@ -46,6 +47,7 @@ function redisConnection() {
     TranscriptsModule,
     StatsModule,
     AuditModule,
+    IntegrationsModule,
     AiModule,
     QueueModule,
     WorkerModule,

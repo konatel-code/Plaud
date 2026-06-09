@@ -45,6 +45,9 @@ export function AppShell({ children }: { children: ReactNode }) {
                 <Link href="/admin/sablony" className="hover:text-daka">
                   Šablóny
                 </Link>
+                <Link href="/admin/integracie" className="hover:text-daka">
+                  Integrácie
+                </Link>
                 <Link href="/admin/audit" className="hover:text-daka">
                   Audit
                 </Link>

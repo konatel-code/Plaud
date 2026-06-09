@@ -154,7 +154,9 @@ export default function DetailPage() {
       {tab === "zhrnutie" ? (
         <div className="space-y-4">
           <OrganizePanel rec={rec} onChange={load} />
-          {rec.clientProfile && <ProfileCard profile={rec.clientProfile} />}
+          {rec.clientProfile && (
+            <ProfileCard profile={rec.clientProfile} recordingId={rec.id} />
+          )}
           {summary && summary.tasks.length > 0 && <TaskList summary={summary} />}
 
           {summary ? (

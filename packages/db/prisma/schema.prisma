@@ -298,3 +298,17 @@ model AuditLog {
   @@index([userId])
   @@map("audit_logs")
 }
+
+model IntegrationEvent {
+  id          String   @id @default(uuid())
+  typ         String   // napr. "CRM_CLIENT_PROFILE"
+  stav        String   // "ODOSLANE" | "CHYBA" | "PRIPRAVENE"
+  recordingId String?
+  cielUrl     String?
+  payloadJson Json
+  odpoved     String?
+  createdAt   DateTime @default(now())
+
+  @@index([recordingId])
+  @@map("integration_events")
+}
