@@ -57,6 +57,23 @@ Kompletná špecifikácia je v priečinku [`docs/`](./docs):
 └── docs/           # Návrh a špecifikácia
 ```
 
+## Spustenie na jeden príkaz (Docker)
+
+Potrebuješ len nainštalovaný **Docker**. V priečinku projektu spusti:
+
+```bash
+docker compose -f docker-compose.app.yml up --build
+```
+
+Potom otvor **http://localhost:3000** a prihlás sa:
+- **admin@ckdaka.sk** / `admin123` (administrátor)
+- **predajca@ckdaka.sk** / `agent123` (predajca)
+
+Appka sa naplní **ukážkovou konzultáciou** (prepis + zhrnutie + profil klienta), takže hneď vidíš, ako funguje. Pre reálny AI prepis vlastných nahrávok pridaj OpenAI kľúč:
+```bash
+OPENAI_API_KEY=sk-... docker compose -f docker-compose.app.yml up --build
+```
+
 ## Rýchly štart (dev)
 
 ```bash
