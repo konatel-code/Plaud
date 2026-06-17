@@ -1,3 +1,5 @@
+import { DEMO, DEMO_USER, demoResponse } from "./demo";
+
 const BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
 
 const TOKEN_KEY = "daka_access_token";
@@ -18,6 +20,17 @@ async function request<T>(
   path: string,
   body?: unknown,
 ): Promise<T> {
+  if (DEMO) {
+    if (path === "/auth/login") {
+      return { accessToken: "demo-token", user: DEMO_USER } as T;
+    }
+    if (path === "/auth/me") {
+      if (!getToken()) throw new Error("Neprihlásený");
+      return DEMO_USER as T;
+    }
+    return demoResponse<T>(method, path);
+  }
+
   const headers: Record<string, string> = {};
   const token = getToken();
   if (token) headers.Authorization = `Bearer ${token}`;
@@ -53,16 +66,30 @@ export const api = {
 
 /** Stiahne súbor z API (s autorizáciou) a spustí uloženie v prehliadači. */
 export async function downloadFile(path: string, fallbackName: string) {
+  if (DEMO) {
+    const blob = new Blob(
+      [
+        "DAKA Hlas – ukážkový export (demo režim)\n\n" +
+          "V plnej verzii sa tu stiahne reálny prepis a zhrnutie vo formáte MD/HTML/DOCX.",
+      ],
+      { type: "text/plain" },
+    );
+    triggerDownload(blob, fallbackName);
+    return;
+  }
   const token = getToken();
   const res = await fetch(`${BASE}/api${path}`, {
     headers: token ? { Authorization: `Bearer ${token}` } : {},
   });
   if (!res.ok) throw new Error("Export zlyhal");
-  const blob = await res.blob();
+  triggerDownload(await res.blob(), fallbackName);
+}
+
+function triggerDownload(blob: Blob, fileName: string) {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = fallbackName;
+  a.download = fileName;
   document.body.appendChild(a);
   a.click();
   a.remove();

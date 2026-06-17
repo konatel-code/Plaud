@@ -3,12 +3,13 @@
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth";
+import { DEMO } from "@/lib/demo";
 
 export default function LoginPage() {
   const { login } = useAuth();
   const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState(DEMO ? "admin@ckdaka.sk" : "");
+  const [password, setPassword] = useState(DEMO ? "demo" : "");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -36,6 +37,12 @@ export default function LoginPage() {
         <p className="mb-6 text-sm text-slate-500">
           Prihlás sa do AI hlasového asistenta CK DAKA.
         </p>
+
+        {DEMO && (
+          <div className="mb-4 rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-800">
+            Demo režim — prihlás sa ľubovoľnými údajmi (napr. tlačidlom nižšie).
+          </div>
+        )}
 
         {error && (
           <div className="mb-4 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">

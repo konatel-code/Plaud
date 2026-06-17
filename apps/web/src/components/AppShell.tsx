@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, type ReactNode } from "react";
 import { useAuth } from "@/lib/auth";
+import { DEMO } from "@/lib/demo";
 
 export function AppShell({ children }: { children: ReactNode }) {
   const { user, loading, logout } = useAuth();
@@ -23,6 +24,12 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-screen">
+      {DEMO && (
+        <div className="bg-amber-400 px-4 py-1.5 text-center text-xs font-medium text-amber-950">
+          Demo režim — ukážkové dáta. Zmeny sa neukladajú. (Pre reálnu prevádzku
+          spustite appku s backendom.)
+        </div>
+      )}
       <header className="border-b bg-white">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
           <Link href="/nahravky" className="flex items-center gap-2 font-semibold text-daka-dark">
