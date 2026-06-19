@@ -1,0 +1,314 @@
+// DAKA Hlas — dátový model (viď docs/06-datovy-model.md)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------- Enumy ----------
+
+enum UserRole {
+  AGENT
+  MANAGER
+  ADMIN
+}
+
+enum RecordingType {
+  KONZULTACIA
+  PORADA
+  DODAVATEL
+  INE
+}
+
+enum RecordingSource {
+  WEB
+  MOBIL
+  UPLOAD
+}
+
+enum RecordingStatus {
+  UPLOADED
+  TRANSCRIBING
+  TRANSCRIBED
+  SUMMARIZING
+  SUMMARIZED
+  FAILED
+}
+
+enum TemplateType {
+  SYSTEM
+  CUSTOM
+}
+
+enum TemplateUseCase {
+  KONZULTACIA
+  PORADA
+  DODAVATEL
+  UNIVERZAL
+}
+
+enum ClientProfileStatus {
+  LEAD
+  PONUKA_ODOSLANA
+  REZERVOVANE
+  STRATENY
+}
+
+enum TaskStatus {
+  OTVORENA
+  HOTOVA
+}
+
+enum ConsentMethod {
+  USTNY_V_NAHRAVKE
+  PISOMNY
+  INY
+}
+
+enum AttachmentType {
+  IMAGE
+  FILE
+  NOTE
+}
+
+// ---------- Entity ----------
+
+model User {
+  id           String     @id @default(uuid())
+  email        String     @unique
+  meno         String
+  passwordHash String
+  role         UserRole   @default(AGENT)
+  pobocka      String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  recordings   Recording[]
+  auditLogs    AuditLog[]
+  sharedWithMe RecordingShare[]
+
+  @@map("users")
+}
+
+model Recording {
+  id         String          @id @default(uuid())
+  ownerId    String
+  owner      User            @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  nazov      String
+  typ        RecordingType   @default(INE)
+  audioKey   String?         // kľúč v object storage
+  dlzkaSek   Int?
+  jazyk      String          @default("sk")
+  zdroj      RecordingSource @default(WEB)
+  stav       RecordingStatus @default(UPLOADED)
+  poznamka   String?
+  chyba      String?         // popis chyby pri FAILED
+  stitky     String[]        @default([])
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+
+  transcript    Transcript?
+  summaries     Summary[]
+  highlights    Highlight[]
+  attachments   Attachment[]
+  clientProfile ClientProfile?
+  supplierDeal  SupplierDeal?
+  consent       ConsentRecord?
+  shares        RecordingShare[]
+
+  @@index([ownerId])
+  @@index([typ])
+  @@index([stav])
+  @@map("recordings")
+}
+
+model RecordingShare {
+  id          String    @id @default(uuid())
+  recordingId String
+  recording   Recording @relation(fields: [recordingId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+
+  @@unique([recordingId, userId])
+  @@index([userId])
+  @@map("recording_shares")
+}
+
+model Transcript {
+  id          String              @id @default(uuid())
+  recordingId String              @unique
+  recording   Recording           @relation(fields: [recordingId], references: [id], onDelete: Cascade)
+  plnyText    String
+  jazyk       String              @default("sk")
+  model       String?
+  createdAt   DateTime            @default(now())
+
+  segments    TranscriptSegment[]
+
+  @@map("transcripts")
+}
+
+model TranscriptSegment {
+  id           String     @id @default(uuid())
+  transcriptId String
+  transcript   Transcript @relation(fields: [transcriptId], references: [id], onDelete: Cascade)
+  startSek     Float
+  endSek       Float
+  text         String
+  speaker      String?
+  poradie      Int
+
+  @@index([transcriptId])
+  @@map("transcript_segments")
+}
+
+model Template {
+  id         String          @id @default(uuid())
+  kluc       String          @unique // stabilný identifikátor (napr. "konzultacia")
+  nazov      String
+  typ        TemplateType    @default(SYSTEM)
+  useCase    TemplateUseCase
+  schemaJson Json
+  prompt     String
+  popis      String?
+  aktivna    Boolean         @default(true)
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+
+  summaries  Summary[]
+
+  @@map("templates")
+}
+
+model Summary {
+  id          String    @id @default(uuid())
+  recordingId String
+  recording   Recording @relation(fields: [recordingId], references: [id], onDelete: Cascade)
+  templateId  String
+  template    Template  @relation(fields: [templateId], references: [id])
+  dataJson    Json
+  markdown    String
+  model       String?
+  createdAt   DateTime  @default(now())
+
+  tasks       Task[]
+
+  @@index([recordingId])
+  @@map("summaries")
+}
+
+model ClientProfile {
+  id          String              @id @default(uuid())
+  recordingId String              @unique
+  recording   Recording           @relation(fields: [recordingId], references: [id], onDelete: Cascade)
+  dataJson    Json
+  stav        ClientProfileStatus @default(LEAD)
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+
+  @@map("client_profiles")
+}
+
+model SupplierDeal {
+  id          String    @id @default(uuid())
+  recordingId String    @unique
+  recording   Recording @relation(fields: [recordingId], references: [id], onDelete: Cascade)
+  dataJson    Json
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("supplier_deals")
+}
+
+model Task {
+  id         String     @id @default(uuid())
+  summaryId  String
+  summary    Summary    @relation(fields: [summaryId], references: [id], onDelete: Cascade)
+  text       String
+  zodpovedny String?
+  termin     DateTime?
+  priorita   String?
+  stav       TaskStatus @default(OTVORENA)
+  createdAt  DateTime   @default(now())
+
+  @@index([summaryId])
+  @@map("tasks")
+}
+
+model Highlight {
+  id          String    @id @default(uuid())
+  recordingId String
+  recording   Recording @relation(fields: [recordingId], references: [id], onDelete: Cascade)
+  casSek      Float
+  poznamka    String?
+  createdAt   DateTime  @default(now())
+
+  @@index([recordingId])
+  @@map("highlights")
+}
+
+model Attachment {
+  id          String         @id @default(uuid())
+  recordingId String
+  recording   Recording      @relation(fields: [recordingId], references: [id], onDelete: Cascade)
+  typ         AttachmentType
+  url         String
+  popis       String?
+  createdAt   DateTime       @default(now())
+
+  @@index([recordingId])
+  @@map("attachments")
+}
+
+model GlossaryTerm {
+  id        String   @id @default(uuid())
+  pojem     String
+  kategoria String?
+  createdAt DateTime @default(now())
+
+  @@unique([pojem])
+  @@map("glossary_terms")
+}
+
+model ConsentRecord {
+  id          String        @id @default(uuid())
+  recordingId String        @unique
+  recording   Recording     @relation(fields: [recordingId], references: [id], onDelete: Cascade)
+  sposob      ConsentMethod
+  poznamka    String?
+  createdAt   DateTime      @default(now())
+
+  @@map("consent_records")
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  akcia     String
+  entita    String
+  entitaId  String?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@map("audit_logs")
+}
+
+model IntegrationEvent {
+  id          String   @id @default(uuid())
+  typ         String   // napr. "CRM_CLIENT_PROFILE"
+  stav        String   // "ODOSLANE" | "CHYBA" | "PRIPRAVENE"
+  recordingId String?
+  cielUrl     String?
+  payloadJson Json
+  odpoved     String?
+  createdAt   DateTime @default(now())
+
+  @@index([recordingId])
+  @@map("integration_events")
+}

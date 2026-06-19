@@ -1,0 +1,29 @@
+{
+  "expo": {
+    "name": "DAKA Hlas",
+    "slug": "daka-hlas",
+    "scheme": "dakahlas",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": false,
+    "splash": {
+      "backgroundColor": "#0e7490"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "sk.ckdaka.hlas",
+      "infoPlist": {
+        "NSMicrophoneUsageDescription": "Aplikácia potrebuje prístup k mikrofónu na nahrávanie rozhovorov."
+      }
+    },
+    "android": {
+      "package": "sk.ckdaka.hlas",
+      "permissions": ["RECORD_AUDIO"]
+    },
+    "plugins": ["expo-router"],
+    "extra": {
+      "apiUrl": "http://localhost:4000"
+    }
+  }
+}
