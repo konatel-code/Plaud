@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AppShell } from "@/components/AppShell";
 import { Recorder } from "@/components/Recorder";
 import { api, uploadToStorage } from "@/lib/api";
+import { DEMO } from "@/lib/demo";
 import type { RecordingType } from "@/lib/types";
 import { TYPE_LABEL } from "@/lib/labels";
 
@@ -17,6 +19,7 @@ export default function NovaNahravkaPage() {
   const [suhlas, setSuhlas] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [hotovo, setHotovo] = useState<number | null>(null);
 
   async function uploadAndCreate(blob: Blob, mime: string, durationSek: number) {
     setError(null);
@@ -28,6 +31,13 @@ export default function NovaNahravkaPage() {
       setError("Pri konzultácii potvrď súhlas klienta s nahrávaním (GDPR).");
       return;
     }
+
+    // V online demo niet backendu — nahrávku len zaznamenáme a ukážeme výsledok.
+    if (DEMO) {
+      setHotovo(durationSek);
+      return;
+    }
+
     setBusy(true);
     try {
       const pripona = mime.includes("webm") ? "webm" : "mp4";
@@ -71,6 +81,37 @@ export default function NovaNahravkaPage() {
         </div>
       )}
 
+      {hotovo !== null ? (
+        <div className="space-y-4 rounded-xl border bg-white p-6 text-center">
+          <div className="text-4xl">✅</div>
+          <h2 className="text-lg font-semibold text-daka-dark">
+            Nahrávka zaznamenaná ({hotovo}s)
+          </h2>
+          <p className="mx-auto max-w-md text-sm text-slate-600">
+            Toto je online <strong>demo</strong> bez servera, takže prepis a AI
+            zhrnutie sa tu nevykonajú. V plnej verzii (s backendom a OpenAI) sa
+            nahrávka automaticky prepíše a vytvorí sa profil klienta a zhrnutie —
+            takto:
+          </p>
+          <div className="flex flex-col items-center justify-center gap-2 sm:flex-row">
+            <Link
+              href="/nahravky/demo-konzultacia"
+              className="rounded-md bg-daka px-4 py-2 text-sm font-medium text-white hover:bg-daka-dark"
+            >
+              Pozri ukážkový výstup →
+            </Link>
+            <button
+              onClick={() => {
+                setHotovo(null);
+                setNazov("");
+              }}
+              className="rounded-md border px-4 py-2 text-sm hover:bg-slate-50"
+            >
+              Nahrať ďalšiu
+            </button>
+          </div>
+        </div>
+      ) : (
       <div className="space-y-4 rounded-xl border bg-white p-6">
         <label className="block text-sm">
           <span className="mb-1 block font-medium text-slate-700">Názov</span>
@@ -128,6 +169,7 @@ export default function NovaNahravkaPage() {
 
         {busy && <p className="text-sm text-daka">Nahrávam a spúšťam spracovanie…</p>}
       </div>
+      )}
     </AppShell>
   );
 }

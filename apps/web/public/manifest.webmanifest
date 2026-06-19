@@ -1,0 +1,25 @@
+{
+  "name": "DAKA Hlas",
+  "short_name": "DAKA Hlas",
+  "description": "AI hlasový asistent pre CK DAKA",
+  "start_url": "/Plaud/",
+  "scope": "/Plaud/",
+  "display": "standalone",
+  "background_color": "#0e7490",
+  "theme_color": "#0e7490",
+  "lang": "sk",
+  "icons": [
+    {
+      "src": "/Plaud/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/Plaud/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
