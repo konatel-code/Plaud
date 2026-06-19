@@ -87,7 +87,7 @@ export default function DetailClient() {
 
   return (
     <AppShell>
-      <div className="mb-4 flex items-start justify-between">
+      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h1 className="text-xl font-semibold">{rec.nazov}</h1>
           <p className="mt-1 text-sm text-slate-500">
@@ -97,9 +97,9 @@ export default function DetailClient() {
             </span>
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {rec.summaries.length > 0 && (
-            <div className="flex items-center gap-1 text-sm">
+            <div className="flex flex-wrap items-center gap-1 text-sm">
               <span className="text-slate-400">Export:</span>
               {(["md", "html", "docx"] as const).map((f) => (
                 <button

@@ -36,16 +36,16 @@ export default function NahravkyPage() {
 
   return (
     <AppShell>
-      <div className="mb-4 flex items-center justify-between gap-4">
+      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-xl font-semibold">Nahrávky</h1>
         <form onSubmit={onSearch} className="flex gap-2">
           <input
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="Hľadať v názvoch, prepisoch, zhrnutiach…"
-            className="w-72 rounded-md border px-3 py-1.5 text-sm outline-none focus:border-daka"
+            placeholder="Hľadať…"
+            className="w-full rounded-md border px-3 py-1.5 text-sm outline-none focus:border-daka sm:w-72"
           />
-          <button className="rounded-md border px-3 py-1.5 text-sm hover:bg-slate-50">
+          <button className="shrink-0 rounded-md border px-3 py-1.5 text-sm hover:bg-slate-50">
             Hľadať
           </button>
         </form>
@@ -67,8 +67,8 @@ export default function NahravkyPage() {
           </Link>
         </div>
       ) : (
-        <div className="overflow-hidden rounded-xl border bg-white">
-          <table className="w-full text-sm">
+        <div className="overflow-x-auto rounded-xl border bg-white">
+          <table className="w-full min-w-[34rem] text-sm">
             <thead className="bg-slate-50 text-left text-slate-500">
               <tr>
                 <th className="px-4 py-2 font-medium">Názov</th>
