@@ -7,8 +7,11 @@ import {
   Patch,
   Post,
   Query,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from "@nestjs/common";
+import { FileInterceptor } from "@nestjs/platform-express";
 import {
   consentSchema,
   createRecordingSchema,
@@ -47,6 +50,29 @@ export class RecordingsController {
     body: CreateRecordingInput,
   ) {
     return this.recordings.create(user, body);
+  }
+
+  /** Upload audia priamo cez API (multipart). Pole súboru: "audio". */
+  @Post("upload")
+  @UseInterceptors(FileInterceptor("audio"))
+  upload(
+    @CurrentUser() user: AuthUser,
+    @UploadedFile() file: { buffer: Buffer; mimetype?: string; originalname?: string },
+    @Body() body: Record<string, string>,
+  ) {
+    const meta = {
+      nazov: body.nazov ?? "Nahrávka",
+      typ: (["KONZULTACIA", "PORADA", "DODAVATEL", "INE"].includes(body.typ)
+        ? body.typ
+        : "INE") as CreateRecordingInput["typ"],
+      jazyk: body.jazyk || "sk",
+      zdroj: (["WEB", "MOBIL", "UPLOAD"].includes(body.zdroj)
+        ? body.zdroj
+        : "WEB") as CreateRecordingInput["zdroj"],
+      dlzkaSek: body.dlzkaSek ? Number(body.dlzkaSek) : undefined,
+      poznamka: body.poznamka || undefined,
+    };
+    return this.recordings.uploadAudio(user, file, meta);
   }
 
   @Get()

@@ -52,6 +52,27 @@ export const api = {
   baseUrl: BASE,
 };
 
+/** Nahrá audio (file URI z expo-av) cez API (multipart) a vytvorí nahrávku. */
+export async function uploadRecording(
+  fileUri: string,
+  fields: Record<string, string>,
+  fileName = "nahravka.m4a",
+  contentType = "audio/m4a",
+): Promise<{ id: string }> {
+  const form = new FormData();
+  // React Native FormData súbor:
+  form.append("audio", { uri: fileUri, name: fileName, type: contentType } as any);
+  for (const [k, v] of Object.entries(fields)) form.append(k, v);
+
+  const res = await fetch(`${BASE}/api/recordings/upload`, {
+    method: "POST",
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+    body: form,
+  });
+  if (!res.ok) throw new Error("Nahranie zlyhalo");
+  return (await res.json()) as { id: string };
+}
+
 /** Nahrá lokálny súbor (file URI z expo-av) do storage cez pre-signed URL. */
 export async function uploadToStorage(
   url: string,

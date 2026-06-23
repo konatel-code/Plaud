@@ -33,6 +33,24 @@ export class RecordingsService {
     return this.storage.createUploadUrl(input.pripona, input.contentType);
   }
 
+  /** Upload audia cez API: server uloží súbor do úložiska a vytvorí nahrávku. */
+  async uploadAudio(
+    user: AuthUser,
+    file: { buffer: Buffer; mimetype?: string; originalname?: string },
+    meta: Omit<CreateRecordingInput, "audioKey">,
+  ) {
+    const ext = (file.originalname?.split(".").pop() || "webm")
+      .toLowerCase()
+      .replace(/[^a-z0-9]/g, "")
+      .slice(0, 8);
+    const { key } = await this.storage.putObject(
+      file.buffer,
+      file.mimetype || "audio/webm",
+      ext || "webm",
+    );
+    return this.create(user, { ...meta, audioKey: key });
+  }
+
   async create(user: AuthUser, input: CreateRecordingInput) {
     const recording = await this.prisma.recording.create({
       data: {

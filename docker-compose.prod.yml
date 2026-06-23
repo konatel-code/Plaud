@@ -1,0 +1,121 @@
+# DAKA Hlas — produkčné nasadenie na vlastný server (VPS) s reálnym AI.
+#
+# 1) skopíruj .env.prod.example do .env a doplň OPENAI_API_KEY, SITE_ADDRESS, JWT tajomstvá
+# 2) spusti:  docker compose -f docker-compose.prod.yml --env-file .env up -d --build
+# 3) otvor svoju doménu (Caddy zariadi HTTPS automaticky)
+#
+# Úložisko (MinIO), DB a Redis bežia interne (neverejné). Audio sa nahráva cez API.
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: daka
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-daka}
+      POSTGRES_DB: daka_hlas
+    volumes:
+      - daka-postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U daka -d daka_hlas"]
+      interval: 5s
+      timeout: 5s
+      retries: 15
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    volumes:
+      - daka-redis:/data
+
+  minio:
+    image: minio/minio:latest
+    restart: unless-stopped
+    command: server /data
+    environment:
+      MINIO_ROOT_USER: ${S3_ACCESS_KEY:-daka}
+      MINIO_ROOT_PASSWORD: ${S3_SECRET_KEY:-daka-secret}
+    volumes:
+      - daka-minio:/data
+
+  minio-init:
+    image: minio/mc:latest
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      until (mc alias set local http://minio:9000 ${S3_ACCESS_KEY:-daka} ${S3_SECRET_KEY:-daka-secret}) do sleep 2; done;
+      mc mb --ignore-existing local/daka-hlas;
+      echo bucket-ok;
+      "
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      minio:
+        condition: service_started
+    environment:
+      DATABASE_URL: postgresql://daka:${POSTGRES_PASSWORD:-daka}@postgres:5432/daka_hlas?schema=public
+      REDIS_URL: redis://redis:6379
+      S3_ENDPOINT: http://minio:9000
+      S3_REGION: eu-central-1
+      S3_BUCKET: daka-hlas
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY:-daka}
+      S3_SECRET_KEY: ${S3_SECRET_KEY:-daka-secret}
+      S3_FORCE_PATH_STYLE: "true"
+      JWT_SECRET: ${JWT_SECRET:?nastav JWT_SECRET v .env}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:?nastav JWT_REFRESH_SECRET v .env}
+      JWT_ACCESS_TTL: "3600"
+      JWT_REFRESH_TTL: "2592000"
+      OPENAI_API_KEY: ${OPENAI_API_KEY:?nastav OPENAI_API_KEY v .env}
+      OPENAI_TRANSCRIBE_MODEL: ${OPENAI_TRANSCRIBE_MODEL:-whisper-1}
+      OPENAI_SUMMARY_MODEL: ${OPENAI_SUMMARY_MODEL:-gpt-4o}
+      AI_DEFAULT_LANGUAGE: sk
+      CRM_WEBHOOK_URL: ${CRM_WEBHOOK_URL:-}
+      API_PORT: "4000"
+    # v produkcii naplníme schému + základné dáta (bez demo nahrávky)
+    command: >
+      sh -lc "pnpm --filter @daka/db exec prisma db push --skip-generate
+      && pnpm --filter @daka/db run seed
+      && node apps/api/dist/main.js"
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        # prázdne = web volá API na rovnakej doméne (/api) cez Caddy
+        NEXT_PUBLIC_API_URL: ""
+    restart: unless-stopped
+    depends_on:
+      - api
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on:
+      - web
+      - api
+    environment:
+      SITE_ADDRESS: ${SITE_ADDRESS:-}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - daka-caddy-data:/data
+      - daka-caddy-config:/config
+
+volumes:
+  daka-postgres:
+  daka-redis:
+  daka-minio:
+  daka-caddy-data:
+  daka-caddy-config:

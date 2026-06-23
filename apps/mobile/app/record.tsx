@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { Audio } from "expo-av";
 import { useRouter } from "expo-router";
-import { api, uploadToStorage } from "@/lib/api";
+import { api, uploadRecording } from "@/lib/api";
 import { TYPE_LABEL, type RecordingType } from "@/lib/types";
 
 const TYPES: RecordingType[] = ["KONZULTACIA", "PORADA", "DODAVATEL", "INE"];
@@ -61,19 +61,12 @@ export default function RecordScreen() {
       setRecording(null);
       if (!uri) throw new Error("Nahrávka sa nevytvorila");
 
-      const contentType = "audio/m4a";
-      const { key, url } = await api.post<{ key: string; url: string }>(
-        "/recordings/upload-url",
-        { contentType, pripona: "m4a" },
-      );
-      await uploadToStorage(url, uri, contentType);
-      const rec = await api.post<{ id: string }>("/recordings", {
+      const rec = await uploadRecording(uri, {
         nazov,
         typ,
-        audioKey: key,
-        dlzkaSek: durationSek,
         jazyk: "sk",
         zdroj: "MOBIL",
+        dlzkaSek: String(durationSek),
       });
       if (typ === "KONZULTACIA") {
         await api.post(`/recordings/${rec.id}/consent`, { sposob: "USTNY_V_NAHRAVKE" });
