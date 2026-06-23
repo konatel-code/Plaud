@@ -41,6 +41,20 @@ export class StorageService {
     return { key, url };
   }
 
+  /** Uloží audio na strane servera (upload cez API) a vráti kľúč. */
+  async putObject(buffer: Buffer, contentType: string, pripona: string) {
+    const key = `recordings/${new Date().getFullYear()}/${randomUUID()}.${pripona}`;
+    await this.client.send(
+      new PutObjectCommand({
+        Bucket: this.bucket,
+        Key: key,
+        Body: buffer,
+        ContentType: contentType,
+      }),
+    );
+    return { key };
+  }
+
   /** Pre-signed URL na prehratie/stiahnutie audia. */
   getDownloadUrl(key: string) {
     return getSignedUrl(

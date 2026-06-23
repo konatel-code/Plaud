@@ -1,0 +1,20 @@
+# DAKA Hlas — reverzná proxy (Caddy)
+# SITE_ADDRESS = doména (napr. hlas.ckdaka.sk) → automatické HTTPS.
+# Ak nie je nastavená, počúva na :80 (vhodné pre test cez IP).
+{$SITE_ADDRESS::80} {
+	encode gzip
+
+	# API a health smerujú na backend
+	@api path /api/*
+	handle @api {
+		reverse_proxy api:4000
+	}
+	handle /health {
+		reverse_proxy api:4000
+	}
+
+	# všetko ostatné na web (Next.js)
+	handle {
+		reverse_proxy web:3000
+	}
+}

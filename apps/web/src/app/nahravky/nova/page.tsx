@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AppShell } from "@/components/AppShell";
 import { Recorder } from "@/components/Recorder";
-import { api, uploadToStorage } from "@/lib/api";
+import { api, uploadRecording } from "@/lib/api";
 import { DEMO } from "@/lib/demo";
 import type { RecordingType } from "@/lib/types";
 import { TYPE_LABEL } from "@/lib/labels";
@@ -41,19 +41,14 @@ export default function NovaNahravkaPage() {
     setBusy(true);
     try {
       const pripona = mime.includes("webm") ? "webm" : "mp4";
-      const { key, url } = await api.post<{ key: string; url: string }>(
-        "/recordings/upload-url",
-        { contentType: mime, pripona },
-      );
-      await uploadToStorage(url, blob, mime);
-      const rec = await api.post<{ id: string }>("/recordings", {
-        nazov,
-        typ,
-        audioKey: key,
-        dlzkaSek: durationSek,
-        jazyk: "sk",
-        zdroj: "WEB",
-      });
+      const form = new FormData();
+      form.append("audio", blob, `nahravka.${pripona}`);
+      form.append("nazov", nazov);
+      form.append("typ", typ);
+      form.append("jazyk", "sk");
+      form.append("zdroj", "WEB");
+      form.append("dlzkaSek", String(durationSek));
+      const rec = await uploadRecording(form);
       if (typ === "KONZULTACIA") {
         await api.post(`/recordings/${rec.id}/consent`, {
           sposob: "USTNY_V_NAHRAVKE",

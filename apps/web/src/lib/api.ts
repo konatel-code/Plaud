@@ -96,6 +96,26 @@ function triggerDownload(blob: Blob, fileName: string) {
   URL.revokeObjectURL(url);
 }
 
+/** Nahrá audio cez API (multipart) a vytvorí nahrávku. Vráti vytvorenú nahrávku. */
+export async function uploadRecording(form: FormData): Promise<{ id: string }> {
+  const token = getToken();
+  const res = await fetch(`${BASE}/api/recordings/upload`, {
+    method: "POST",
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+    body: form,
+  });
+  if (!res.ok) {
+    let detail = "Nahranie zlyhalo";
+    try {
+      detail = (await res.json()).message ?? detail;
+    } catch {
+      /* ignore */
+    }
+    throw new Error(typeof detail === "string" ? detail : "Nahranie zlyhalo");
+  }
+  return res.json();
+}
+
 /** Nahrá súbor priamo do object storage cez pre-signed URL. */
 export async function uploadToStorage(
   url: string,
